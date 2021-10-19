@@ -217,7 +217,8 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  return !((x >> 6) ^ 0x0) & !(x >> 4 ^0x3) & (!((x >> 3) & 1) | (((x >> 3) & 1) & !((x >> 2) & 1) & !((x >> 1) & 1) ));
+  int a = ((x >> 3) & 1);
+  return  !(x >> 4 ^ 0x3) & (!a | (a & ((x >> 2) ^ 1) & ((x >> 1) ^ 1) ));
 }
 /* 
  * conditional - same as x ? y : z 
@@ -239,7 +240,11 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  int Sx = (x >> 31) & 1; // 取出x的符号
+  int Sy = (y >> 31) & 1; // 取出y的符号
+  int z = x + ~y + 1;     // z = x-y
+  int d = ((z >> 31) & 1) | !(z ^ 0x0); 
+  return !(Sx ^ Sy) & d | (Sx & !Sy); // 同号下如果z的符号位为1，或者z全为0，说明x<=y。若x为负数，y为正数 x<=y也成立
 }
 //4
 /* 
@@ -251,8 +256,16 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  int a = (~x + 1) ^ x;
-  return (a & 0x0) | (~a & 0x1);
+  // // |运算符的"分裂性"
+  // x |= x >> 16;
+  // x |= x >> 8;
+  // x |= x >> 4;
+  // x |= x >> 2;
+  // x |= x >> 1;
+  // x ^= 1; // 此时可能为 0xfffffffe  
+  // return x & 1;
+
+  return ((x | ~x + 1) >> 31) + 1;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -267,7 +280,25 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+  int s = (x >> 31) & 1;  // 计算符号位，用于判断是否需要取反
+  x = ((s << 31) >> 31) ^ x;   // 负数取反，正数不变，  目的是去掉符号位进行位数计算。
+  s = !!(x >> 16);    //判断高16位是否有1
+  int c1 = s << 4;     //若有，低16位存在，结果+16
+  x = x >> c1;         //高c1位移动,  注意  这里要用c1而不是16，因为如果高16位没有1，就不需要计算和进行移动，直接从低16位开始
+  s = !!(x >> 8);
+  int c2 = s << 3;     
+  x = x >> c2;          //同理，高8位存在1，则结果加8，移动8位。
+  s = !!(x >> 4);
+  int c3 = s << 2;     
+  x = x >> c3;          //同理
+  s = !!(x >> 2);
+  int c4 = s << 1;     
+  x = x >> c4;          //同理
+  s = !!(x >> 1);
+  int c5 = s;     
+  x = x >> c5;          //同理
+  int c6 = !!x ;
+  return c1 + c2 + c3 + c4 + c5 + c6 + 1;
 }
 //float
 /* 
