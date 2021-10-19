@@ -225,3 +225,77 @@ int howManyBits(int x) {
 }
 ```
 
+### 11.floatScale2
+
+![image-20211019200620809](D:\project\csapp\document\实验1：dataLab.assets\image-20211019200620809.png)
+
+情况1：当 exp  == 255  
+
+frac == 0 得到NaN
+
+ frac !=0  得到无穷大
+
+return uf;
+
+情况2：当exp == 0
+
+frac == 0; 值为0
+
+frac != 0； 值为frac
+
+return frac << 1;
+
+情况3： exp != 255 && exp != 0;
+
+exp++;  其余不变
+
+```c
+unsigned floatScale2(unsigned uf) {
+  //计算各个位置的值
+  int exp = (uf & 0x7f800000) >> 23;
+  int sign = uf >> 31 & 0x1;
+  int frac = uf & 0x007fffff;
+
+  if(exp == 255) {       //NaN或无穷大
+    return uf;
+  } else if (exp == 0){  //零值或frac值
+    frac <<= 1;
+    return sign << 31 | frac;
+  } else {               //正常值，将exp+1即可
+    exp++;
+    return sign << 31 | exp << 23 | frac;
+  }
+}
+```
+
+### 12 floatFloat2Int
+
+```c
+int floatFloat2Int(unsigned uf) {
+    //计算各个位置的值
+  int exp = (uf & 0x7f800000) >> 23;
+  int sign = uf >> 31 & 0x1;
+  int frac = uf & 0x007fffff;
+  int E = exp - 127; //指数
+
+  if(E < 0) {    //小于1， 舍入0
+    return 0;
+  } else if (E >=31){   //超过31  超出整数长度，出现溢出，返回0x80000000u
+    return 0x80000000u;
+  } else {
+    frac = frac | 1 << 23;  // frac最高位补充被省略的1
+    if(E < 23) {            //E小于23，则存在小数位，保留整数位即可，小数位舍入。
+      frac = frac >>(23 - E);
+    } else {                //E大于23，可以继续扩大。
+      frac = frac <<(E - 23);
+    }
+  }
+  //判断正负数
+  if(sign){
+    return -frac;
+  }else {
+    return frac;
+  }
+}
+```
+
