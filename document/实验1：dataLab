@@ -1,0 +1,137 @@
+# 实验1：dataLab
+
+- 阅读`readme` 完成配置
+
+~~~text
+```
+shell    To compile and run the btest program, type:
+unix> make btest
+unix> ./btest [optional cmd line args]
+```
+~~~
+
+make btest 进行编译
+
+./btest运行
+
+每次更改bits.c文件后都要重新编译btest。如果需要检查单个函数的正确性，可以使用-f标志：
+
+```
+./btest -f bitXor
+```
+
+`dlc`程序可以检测我们有没有违规，如果运行没有输出则没有问题
+
+```
+./bits.c
+```
+
+可以采用vscode进行代码编写，进入容器编译运行
+
+
+
+### 1.bitXor
+
+```c
+int bitXor(int x, int y) {
+  return ~(x&y)&~(~x&~y);
+}
+```
+
+根据表格推导可得到结果
+
+![image-20211019160020922](D:\project\csapp\document\dataLab.assets\image-20211019160020922.png)
+
+### 2.tmin
+
+```c
+int tmin(void) {
+  return 1 << 31;
+}
+```
+
+### 3.isTmax
+
+首先，Tmax + 1 会得到Tmin，  并且通过~Tmin，重新得到Tmax。 根据这一特性，配合x ^ x = 0  的特点，可以判断是否为Tmax   即 ~ (x + 1) ^ x  如果为0则x为最大值。
+
+特殊的，由于0xffffffff也会得到相同的结果，其中关键的特点在于0xffffffff + 1 = 0x00000000，而其他值得到的都是非零值，利用!!的特点，0值会得到0，而非零值会得到1，过滤掉0xffffffff的情况，即!!(x + 1)
+
+只要满足这两种条件，即能得到正确答案。
+
+```c
+int isTmax(int x) {
+  return !(~(x+1) ^ x)&!!(x + 1);
+}
+```
+
+### 4.allOddBits
+
+分别判断偶数位是否为1，暴力求解
+
+```c
+int allOddBits(int x) {
+  return 1&(x >> 1) & 
+         1&(x >> 3) & 
+         1&(x >> 5) & 
+         1&(x >> 7) & 
+         1&(x >> 9) & 
+         1&(x >> 11) & 
+         1&(x >> 13) & 
+         1&(x >> 15) & 
+         1&(x >> 17) & 
+         1&(x >> 19) & 
+         1&(x >> 21) & 
+         1&(x >> 23) & 
+         1&(x >> 25) & 
+         1&(x >> 27) & 
+         1&(x >> 29) & 
+         1&(x >> 31);
+}
+```
+
+当然也可以通过构造0xAAAAAAAA来求解
+
+```c
+int allOddBits(int x) {
+  int a = 0xA << 4 | 0xA;
+  int b = a << 8 | a;
+  int c = b << 16 | b;
+  return !((c & x)^ c);
+}
+```
+
+### 5.negate
+
+补码常识，取反加1
+
+```c
+int negate(int x) {
+  return ~x + 1;
+}
+```
+
+### 6.isAsciiDigit
+
+同样采用比较暴力的方法。
+
+先判断是否是大于等于0x40的数字，通过!((x >> 6) ^ 0x0)
+
+再判断是否满足0x30里的3。通过((x >> 5) & 1) & ((x >> 4) & 1)，其中可以优化为：!(x >> 4 ^0x3)
+
+最后判断是否再0x0-0x9之间，通过(!((x >> 3) & 1) | (((x >> 3) & 1) & !((x >> 2) & 1) & !((x >> 1) & 1) ));
+
+```c
+int isAsciiDigit(int x) {
+  return !((x >> 6) ^ 0x0) & ((x >> 5) & 1) & ((x >> 4) & 1) & (!((x >> 3) & 1) | (((x >> 3) & 1) & !((x >> 2) & 1) & !((x >> 1) & 1) ));
+}
+```
+
+### 7.conditional
+
+```c
+int conditional(int x, int y, int z) {
+  int a = !!x;  //先判断是不是为0
+  int b =  (a << 31) >> 31;  //转化为0xffffffff或0x00000000
+  return (~b & z)|(b & y);  //根据~0x00000000或0xffffffff来选择y或z
+}
+```
