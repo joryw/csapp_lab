@@ -44,7 +44,7 @@ int bitXor(int x, int y) {
 
 根据表格推导可得到结果
 
-![image-20211019160020922](dataLab.assets/image-20211019160020922.png)
+![image-20211019160020922](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021211627.png)
 
 ### 2.tmin
 
@@ -231,7 +231,7 @@ int howManyBits(int x) {
 
 ### 11.floatScale2
 
-![image-20211019200620809](实验1：dataLab.assets/image-20211019200620809.png)
+![image-20211019200620809](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021211628.png)
 
 情况1：当 exp  == 255  
 
