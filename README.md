@@ -24,9 +24,9 @@
 
 ### 踩坑记录
 
-[实验内]()
+[实验内日志](https://github.com/junchao-ustc/csapp/blob/main/log/%E5%AE%9E%E9%AA%8C%E5%86%85%E6%97%A5%E5%BF%97.md)
 
-[实验外]()
+[实验外日志](https://github.com/junchao-ustc/csapp/blob/main/log/%E5%AE%9E%E9%AA%8C%E5%A4%96%E6%97%A5%E5%BF%97.md)
 
 ### 参考材料
 
