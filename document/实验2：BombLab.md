@@ -1,5 +1,7 @@
 # BombLab
 
+[toc]
+
 安装gdb：`sudo yum install gdb`
 
 [gdb指令汇总](http://csapp.cs.cmu.edu/2e/docs/gdbnotes-x86-64.pdf)
