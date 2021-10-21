@@ -2,11 +2,9 @@
 
 安装gdb：`sudo yum install gdb`
 
-[gdb命令](http://csapp.cs.cmu.edu/2e/docs/gdbnotes-x86-64.pdf)
+[gdb指令汇总](http://csapp.cs.cmu.edu/2e/docs/gdbnotes-x86-64.pdf)
 
 [gdbGuide1](http://beej.us/guide/bggdb/)
-
-[gdbGuide2](https://heather.cs.ucdavis.edu/~matloff/UnixAndC/CLanguage/Debug.html)
 
 使用`objdump -d ./bomb >> bomb.s`反编译得到汇编代码
 
@@ -215,11 +213,11 @@ sscanf(rdi,esi,rdx,rcx)
   401024:	e8 c7 fb ff ff       	callq  400bf0 <__isoc99_sscanf@plt>
   401029:	83 f8 02             	cmp    $0x2,%eax
   40102c:	75 07                	jne    401035 <phase_4+0x29>
-  #第一个参数要<=15,否则爆炸
+  #第一个参数要<=14,否则爆炸
   40102e:	83 7c 24 08 0e       	cmpl   $0xe,0x8(%rsp)
   401033:	76 05                	jbe    40103a <phase_4+0x2e>
   401035:	e8 00 04 00 00       	callq  40143a <explode_bomb>
-  # edx=15  esi=0 edi=第一个参数
+  # edx=14  esi=0 edi=第一个参数
   40103a:	ba 0e 00 00 00       	mov    $0xe,%edx
   40103f:	be 00 00 00 00       	mov    $0x0,%esi
   401044:	8b 7c 24 08          	mov    0x8(%rsp),%edi
@@ -227,6 +225,11 @@ sscanf(rdi,esi,rdx,rcx)
   # 检查返回值是否为0，不为0发生爆炸
   40104d:	85 c0                	test   %eax,%eax
   40104f:	75 07                	jne    401058 <phase_4+0x4c>
+```
+
+重点看func函数进行了什么，得到什么返回值，当返回值为0时，才不发生爆炸
+
+```assembly
   #第二个参数等于0，恢复帧 返回。否则爆炸
   401051:	83 7c 24 0c 00       	cmpl   $0x0,0xc(%rsp)
   401056:	74 05                	je     40105d <phase_4+0x51>
@@ -235,28 +238,40 @@ sscanf(rdi,esi,rdx,rcx)
   401061:	c3                   	retq   
 ```
 
+这一段可以看出第二个参数必须为0
+
 #### 2.func4
 
 ```assembly
 0000000000400fce <func4>:
-  #分配大小为8的栈，eax=edx=15 eax-esi=15
-  400fce:	48 83 ec 08          	sub    $0x8,%rsp
-  400fd2:	89 d0                	mov    %edx,%eax
-  400fd4:	29 f0                	sub    %esi,%eax
-  400fd6:	89 c1                	mov    %eax,%ecx
-  #移动
-  400fd8:	c1 e9 1f             	shr    $0x1f,%ecx
-  400fdb:	01 c8                	add    %ecx,%eax
-  400fdd:	d1 f8                	sar    %eax
+  400fce:	48 83 ec 08          	sub    $0x8,%rsp # 分配大小为8的栈帧
+  400fd2:	89 d0                	mov    %edx,%eax # eax = edx = 15
+  400fd4:	29 f0                	sub    %esi,%eax # eax - esi
+  400fd6:	89 c1                	mov    %eax,%ecx # ecx = eax
+  400fd8:	c1 e9 1f             	shr    $0x1f,%ecx # ecx 右移31位
+  400fdb:	01 c8                	add    %ecx,%eax # eax = ecx + eax
+  400fdd:	d1 f8                	sar    %eax  # eax = eax / 2 = 7
+  #ecx = rax + 1 * rsi
   400fdf:	8d 0c 30             	lea    (%rax,%rsi,1),%ecx
-  400fe2:	39 f9                	cmp    %edi,%ecx
+  #ecx - edi(参数1) <=0 跳转
+  400fe2:	39 f9                	cmp    %edi,%ecx 
   400fe4:	7e 0c                	jle    400ff2 <func4+0x24>
   400fe6:	8d 51 ff             	lea    -0x1(%rcx),%edx
   400fe9:	e8 e0 ff ff ff       	callq  400fce <func4>
   400fee:	01 c0                	add    %eax,%eax
   400ff0:	eb 15                	jmp    401007 <func4+0x39>
-  400ff2:	b8 00 00 00 00       	mov    $0x0,%eax
-  400ff7:	39 f9                	cmp    %edi,%ecx
+```
+
+需要读懂这段代码做了什么操作，最后返回的%eax=0
+
+里面的逻辑大概就是，如果小于等于rax，则进行/2-1
+
+假设填入边界条件7，发生跳转，则进入下面逻辑
+
+```assembly
+
+  400ff2:	b8 00 00 00 00       	mov    $0x0,%eax  #eax=0
+  400ff7:	39 f9                	cmp    %edi,%ecx  #edi = ecx = 7 符合跳转条件，
   400ff9:	7d 0c                	jge    401007 <func4+0x39>
   400ffb:	8d 71 01             	lea    0x1(%rcx),%esi
   400ffe:	e8 cb ff ff ff       	callq  400fce <func4>
@@ -264,4 +279,58 @@ sscanf(rdi,esi,rdx,rcx)
   401007:	48 83 c4 08          	add    $0x8,%rsp
   40100b:	c3                   	retq 
 ```
+
+这是一个简单递归函数，可以卡住边界条件，而当结果为7时候 eax = 0跳出func函数，能够破解炸弹
+
+而函数的代码如下所示
+
+```c
+void func4(int x,int y,int z)  //y的初始值为0，z的初始值为14,t->%rax,k->%ecx
+{
+  int t=z-y;
+  int k=t>>31;
+  t=(t+k)>>1;
+  k=t+y;
+  if(k>x)
+  {
+    z=k-1;
+    func4(x,y,z);
+    t=2t;
+    return;
+  }
+  else
+   {
+     t=0;
+     if(k<x)
+     {
+        y=k+1;
+        func4(x,y,z);
+        t=2*t+1;
+        return;
+     }
+     else
+     {
+         return;
+     }
+   }
+}
+```
+
+从代码中推理，我们可以看到，我们要向得到t  = 0，还有一种方式是，进入到这段逻辑中
+
+```c
+  if(k>x)
+  {
+    z=k-1;
+    func4(x,y,z);
+    t=2t;
+    return;
+  }
+```
+
+ 倒推，最后一直落到t=2t，只要t=0，则能得到结果。
+
+每次都会发生`t=(t+k)>>1`; 那么，初始化的t都会缩小，
+
+由于``k=t+y;``k也会跟着缩小，直到最终k = t = 0，也能作为临界条件，退出循环。
 
