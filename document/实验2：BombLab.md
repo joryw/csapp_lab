@@ -16,7 +16,7 @@
 
 首先前面会将输入的字符串存入到%rax中
 
-![image-20211020162409116](D:\project\csapp\document\实验2：BombLab.assets\image-20211020162409116.png)
+![image-20211020162409116](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212240.png)
 
 我们可以看到phase_1所在的代码如图红框所示，汇编代码含义如下
 
@@ -103,7 +103,7 @@
   40149d:	c3                   	retq  
 ```
 
-![image-20211020201616336](D:\project\csapp\document\实验2：BombLab.assets\image-20211020201616336.png)
+![image-20211020201616336](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212241.png)
 
 从 0x4025c3可以看出，需要6位数字
 
@@ -116,11 +116,11 @@
 
 #### 1.phase_3
 
-![image-20211020222651772](D:\project\csapp\document\实验2：BombLab.assets\image-20211020222651772.png)
+![image-20211020222651772](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212242.png)
 
 sscanf(rdi,esi,rdx,rcx)
 
-![image-20211020222913317](D:\project\csapp\document\实验2：BombLab.assets\image-20211020222913317.png)
+![image-20211020222913317](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212243.png)
 
 - 利用`%rdx` 也就是`0x8+%rsp`和利用`%rcx` 也就是`0xc+%rsp`传递`sscanf`函数用的第三和第四个参数
 - 第二个参数为一个常数`0x4025cf`随后调用`<__isoc99_sscanf@plt>` 这里注意一下`sscanf`如果调用成功的话会返回2这里如果成功的话会跳转到`400f6a`这里读入的`rdx`和`rcx`的值就是我们输入的第一个和第二个数
@@ -389,7 +389,7 @@ void func4(int x,int y,int z)  //y的初始值为0，z的初始值为14,t->%rax,
 1. 6次循环每次取出索引位置的字符，将其与0xf进行&操作，得到字符十六进制的最后一位，最后将地址0x4024b0+%edx（前面&操作计算的数值），根据`0x10(%rsp,%rax,1)`将结果递增存储到栈位置，最后进行字符串比较
 2. 我们可以打印出0x4024b0位置的内容，每次取出对应的是哪些值
 
-![image-20211021203806616](实验2：BombLab.assets/image-20211021203806616.png)
+![image-20211021203806616](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212244.png)
 
 3. 从上图可以看出，0x4024b0起始的字符串索引1-15对应的值为maduiersnfotvbyl。
 
@@ -409,7 +409,7 @@ void func4(int x,int y,int z)  //y的初始值为0，z的初始值为14,t->%rax,
 
 看到直接数  `0x40245e`  打印看看内容
 
-![image-20211021192625268](D:\project\csapp\document\实验2：BombLab.assets\image-20211021192625268.png)
+![image-20211021192625268](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212245.png)
 
 得到字符串"flyers"
 
@@ -421,9 +421,9 @@ flyers：9、15、14、5、6、7
 
 通过对照ASCII表。
 
-![image-20211021200451282](D:\project\csapp\document\实验2：BombLab.assets\image-20211021200451282.png)
+![image-20211021200451282](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212246.png)
 
 最终确定字符串yonuvw（答案并不唯一）符合条件。如图所示
 
-![image-20211021204425592](D:\project\csapp\document\实验2：BombLab.assets\image-20211021204425592.png)
+![image-20211021204425592](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212247.png)
 
