@@ -1,7 +1,19 @@
 # 实验1：dataLab
 
-[toc]
-
+- [ 1.bitXor](#head1)
+- [ 2.tmin](#head2)
+- [ 3.isTmax](#head3)
+- [ 4.allOddBits](#head4)
+- [ 5.negate](#head5)
+- [ 6.isAsciiDigit](#head6)
+- [ 7.conditional](#head7)
+- [ 8.isLessOrEqual](#head8)
+- [ 9.logicalNeg](#head9)
+- [ 10.howManyBits](#head10)
+- [ 11.floatScale2](#head11)
+- [ 12.floatFloat2Int](#head12)
+- [ 13.floatPower2](#head13)
+- [ 参考资料](#head14)
 
 
 - 阅读`readme` 完成配置
@@ -34,7 +46,7 @@ make btest 进行编译
 
 
 
-### 1.bitXor
+### <span id="head1"> 1.bitXor</span>
 
 ```c
 int bitXor(int x, int y) {
@@ -44,9 +56,9 @@ int bitXor(int x, int y) {
 
 根据表格推导可得到结果
 
-![image-20211019160020922](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021211627.png)
+![image-20211019160020922](实验1：dataLab.assets/20211021211627.png)
 
-### 2.tmin
+### <span id="head2"> 2.tmin</span>
 
 ```c
 int tmin(void) {
@@ -54,7 +66,7 @@ int tmin(void) {
 }
 ```
 
-### 3.isTmax
+### <span id="head3"> 3.isTmax</span>
 
 首先，Tmax + 1 会得到Tmin，  并且通过~Tmin，重新得到Tmax。 根据这一特性，配合x ^ x = 0  的特点，可以判断是否为Tmax   即 ~ (x + 1) ^ x  如果为0则x为最大值。
 
@@ -68,7 +80,7 @@ int isTmax(int x) {
 }
 ```
 
-### 4.allOddBits
+### <span id="head4"> 4.allOddBits</span>
 
 分别判断偶数位是否为1，暴力求解
 
@@ -128,7 +140,7 @@ int allOddBits(int x) {
 
 
 
-### 5.negate
+### <span id="head5"> 5.negate</span>
 
 补码常识，取反加1
 
@@ -138,7 +150,7 @@ int negate(int x) {
 }
 ```
 
-### 6.isAsciiDigit
+### <span id="head6"> 6.isAsciiDigit</span>
 
 如果5、6位全1 且 （4位为0或4位为1，2、3位为0）
 
@@ -151,7 +163,7 @@ int isAsciiDigit(int x) {
 
 通过抽取相同计算的作为变量，达到减少操作数的效果
 
-### 7.conditional
+### <span id="head7"> 7.conditional</span>
 
 ```c
 int conditional(int x, int y, int z) {
@@ -161,7 +173,7 @@ int conditional(int x, int y, int z) {
 }
 ```
 
-### 8.isLessOrEqual
+### <span id="head8"> 8.isLessOrEqual</span>
 
 ```c
 int isLessOrEqual(int x, int y) {
@@ -174,7 +186,7 @@ int isLessOrEqual(int x, int y) {
 }
 ```
 
-### 9.logicalNeg
+### <span id="head9"> 9.logicalNeg</span>
 
 ```c
 int logicalNeg(int x) {
@@ -199,7 +211,7 @@ int logicalNeg(int x) {
 }
 ```
 
-### 10.howManyBits
+### <span id="head10"> 10.howManyBits</span>
 
 负数取反的目的：去掉符号位，计算所需要的位数
 
@@ -229,15 +241,15 @@ int howManyBits(int x) {
 }
 ```
 
-### 11.floatScale2
+### <span id="head11"> 11.floatScale2</span>
 
-![image-20211019200620809](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021211628.png)
+![image-20211019200620809](实验1：dataLab.assets/20211021211628.png)
 
 情况1：当 exp  == 255  
 
 frac == 0 得到NaN
 
- frac !=0  得到无穷大
+frac !=0  得到无穷大
 
 return uf;
 
@@ -272,7 +284,7 @@ unsigned floatScale2(unsigned uf) {
 }
 ```
 
-### 12.floatFloat2Int
+### <span id="head12"> 12.floatFloat2Int</span>
 
 ```c
 int floatFloat2Int(unsigned uf) {
@@ -303,7 +315,7 @@ int floatFloat2Int(unsigned uf) {
 }
 ```
 
-### 13.floatPower2
+### <span id="head13"> 13.floatPower2</span>
 
 分情况讨论：
 
@@ -379,7 +391,7 @@ unsigned floatPower2(int x) {
 }
 ```
 
-### 参考资料
+### <span id="head14"> 参考资料</span>
 
 [CSAPP:Lab1 -DataLab 超详解](https://zhuanlan.zhihu.com/p/339047608)
 
