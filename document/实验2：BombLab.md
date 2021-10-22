@@ -1,18 +1,24 @@
-# <span id="head1"> BombLab</span>
+# BombLab
 
-- [ BombLab](#head1)
-	- [ 关卡1](#head2)
-	- [ 关卡2](#head3)
-		- [ 1.phase_2](#head4)
-	- [ 2.read_six_numbers](#head5)
-	- [ 关卡3](#head6)
-		- [ 1.phase_3](#head7)
-	- [ 关卡4](#head8)
-		- [ 1.phase_4](#head9)
-		- [ 2.func4](#head10)
-	- [ 关卡5](#head11)
-		- [ 1.phase_5](#head12)
-	- [ 参考资料](#head13)
+- [<span id="head2"> 关卡1</span>](#head1)
+- [<span id="head3"> 关卡2</span>](#head2)
+	- [<span id="head4"> 1.phase_2</span>](#head3)
+- [<span id="head5"> 2.read_six_numbers</span>](#head4)
+- [<span id="head6"> 关卡3</span>](#head5)
+	- [<span id="head7"> 1.phase_3</span>](#head6)
+- [<span id="head8"> 关卡4</span>](#head7)
+	- [<span id="head9"> 1.phase_4</span>](#head8)
+	- [<span id="head10"> 2.func4</span>](#head9)
+- [<span id="head11"> 关卡5</span>](#head10)
+	- [<span id="head12"> 1.phase_5</span>](#head11)
+- [ 关卡6](#head12)
+	- [ 初始化部分](#head13)
+	- [ 循环验值部分](#head14)
+	- [ 转变参数值部分](#head15)
+	- [ 修改地址值部分](#head16)
+	- [ 验证有序部分](#head17)
+	- [ 完整过程如下](#head18)
+- [<span id="head13"> 参考资料</span>](#head19)
 
 安装gdb：`sudo yum install gdb`
 
@@ -22,7 +28,7 @@
 
 使用`objdump -d ./bomb >> bomb.s`反编译得到汇编代码
 
-### <span id="head2"> 关卡1</span>
+### <span id="head1"><span id="head2"> 关卡1</span></span>
 
 思路，在验证字符串是否符合的位置，找到汇编代码中用到哪个寄存器里的数据进行字符串验证，打印出里面的值就行。
 
@@ -46,9 +52,9 @@
 0x402400:       "Border relations with Canada have never been better."
 ```
 
-### <span id="head3"> 关卡2</span>
+### <span id="head2"><span id="head3"> 关卡2</span></span>
 
-#### <span id="head4"> 1.phase_2</span>
+#### <span id="head3"><span id="head4"> 1.phase_2</span></span>
 
 ```assembly
 0000000000400efc <phase_2>:
@@ -85,7 +91,7 @@
 
 故循环6位数的结果为1 2 4 8 16 32
 
-### <span id="head5"> 2.read_six_numbers</span>
+### <span id="head4"><span id="head5"> 2.read_six_numbers</span></span>
 
 ```assembly
 000000000040145c <read_six_numbers>:
@@ -124,9 +130,9 @@
 0x4025c3:       "%d %d %d %d %d %d"
 ```
 
-### <span id="head6"> 关卡3</span>
+### <span id="head5"><span id="head6"> 关卡3</span></span>
 
-#### <span id="head7"> 1.phase_3</span>
+#### <span id="head6"><span id="head7"> 1.phase_3</span></span>
 
 ![image-20211020222651772](实验2：BombLab.assets/20211021212242.png)
 
@@ -212,9 +218,9 @@ sscanf(rdi,esi,rdx,rcx)
 7 327
 ```
 
-### <span id="head8"> 关卡4</span>
+### <span id="head7"><span id="head8"> 关卡4</span></span>
 
-#### <span id="head9"> 1.phase_4</span>
+#### <span id="head8"><span id="head9"> 1.phase_4</span></span>
 
 ```assembly
 000000000040100c <phase_4>:
@@ -254,7 +260,7 @@ sscanf(rdi,esi,rdx,rcx)
 
 这一段可以看出第二个参数必须为0
 
-#### <span id="head10"> 2.func4</span>
+#### <span id="head9"><span id="head10"> 2.func4</span></span>
 
 ```assembly
 0000000000400fce <func4>:
@@ -349,9 +355,9 @@ void func4(int x,int y,int z)  //y的初始值为0，z的初始值为14,t->%rax,
 
 
 
-### <span id="head11"> 关卡5</span>
+### <span id="head10"><span id="head11"> 关卡5</span></span>
 
-#### <span id="head12"> 1.phase_5</span>
+#### <span id="head11"><span id="head12"> 1.phase_5</span></span>
 
 **字符串长度验证部分**
 
@@ -438,9 +444,11 @@ flyers：9、15、14、5、6、7
 
 ![image-20211021204425592](实验2：BombLab.assets/image-20211021204425592.png)
 
-### 关卡6
+### <span id="head12"> 关卡6</span>
 
-先看源码
+代码完整流程可以跳转到最后查看。
+
+#### <span id="head13"> 初始化部分</span>
 
 ```assembly
 00000000004010f4 <phase_6>:
@@ -481,7 +489,7 @@ flyers：9、15、14、5、6、7
 
 由于初始化赋值r12=0，所以必然不会进行跳转，接着往下看
 
-**循环部分**
+#### <span id="head14"> 循环验值部分</span>
 
 ```assembly
   401132:	44 89 e3             	mov    %r12d,%ebx
@@ -509,9 +517,9 @@ flyers：9、15、14、5、6、7
 
 所以要保证后面的每个参数都不等于参数1
 
-将参数1+4后又间接跳转到0x401114位置
+将参数1地址+4后，变成参数2又间接跳转到0x401114位置
 
-**回退部分**：
+**进行回退**：
 
 ```assembly
   401114:	4c 89 ed             	mov    %r13,%rbp  #rbp 赋值栈位置
@@ -540,9 +548,11 @@ flyers：9、15、14、5、6、7
 
 1. eax(参数2)-1<=5,  r12=2，并且参数2！=参数3
 2. 这里也经过循环，需要保证参数2！=参数3~6
-3. **综上，需要保证所有参数小于6，并且所有参数不相等。**
+3. **综上，需要保证所有参数小于6、大于0，并且所有参数不相等。**
 
 我们尝试`6 5 4 3 2 1`作为答案，继续往下分析：
+
+#### <span id="head15"> 转变参数值部分</span>
 
 ```assembly
   401153:	48 8d 74 24 18       	lea    0x18(%rsp),%rsi #rsi=栈的第7个位置
@@ -556,7 +566,7 @@ flyers：9、15、14、5、6、7
   40116d:	75 f1                	jne    401160 <phase_6+0x6c>
 ```
 
-这里用`7-参数1`存回到参数1中,然后把参数7跟参数2进行比较，不相等回退到0x401160位置。
+这里用`7-参数1`存回到参数1中,然后把参数7跟参数2进行比较，不相等回退到0x401160位置。（**由于参数7没有设置，实际上就是进行了6次循环**。）
 
 假设发生了回退，继续分析
 
@@ -573,7 +583,9 @@ flyers：9、15、14、5、6、7
 
 当这段逻辑运行到参数7跟参数7自己比较时，结束循环。
 
-此时假如我们输入`6 5 4 3 2 1 ` 会转变成`1 2 3 4 5 6`
+**此时假如我们输入`6 5 4 3 2 1 ` 会转变成`1 2 3 4 5 6`**
+
+#### <span id="head16"> 修改地址值部分</span>
 
 ```assembly
   40116f:	be 00 00 00 00       	mov    $0x0,%esi        #esi=0
@@ -585,23 +597,42 @@ flyers：9、15、14、5、6、7
 ```assembly
   401197:	8b 0c 34             	mov    (%rsp,%rsi,1),%ecx #ecx=栈首位置
   40119a:	83 f9 01             	cmp    $0x1,%ecx
-  40119d:	7e e4                	jle    401183 <phase_6+0x8f>
+  40119d:	7e e4                	jle    401183 <phase_6	+0x8f>
 ```
 
 参数1小于等于1，跳转到0x401183
 
 ```assembly
-  401183:	ba d0 32 60 00       	mov    $0x6032d0,%edx
-  401188:	48 89 54 74 20       	mov    %rdx,0x20(%rsp,%rsi,2)
+  401183:	ba d0 32 60 00       	mov    $0x6032d0,%edx    #edx=$0x6032d0
+  401188:	48 89 54 74 20       	mov    %rdx,0x20(%rsp,%rsi,2) 
   40118d:	48 83 c6 04          	add    $0x4,%rsi
   401191:	48 83 fe 18          	cmp    $0x18,%rsi
   401195:	74 14                	je     4011ab <phase_6+0xb7>
-  401197:	8b 0c 34             	mov    (%rsp,%rsi,1),%ecx 
+  401197:	8b 0c 34             	mov    (%rsp,%rsi,1),%ecx #进入下个参数
   40119a:	83 f9 01             	cmp    $0x1,%ecx
   40119d:	7e e4                	jle    401183 <phase_6+0x8f>
 ```
 
-把$0x6032d0存到栈第8个位置。比较rsi是否等于0x18。
+把$0x6032d0存到栈第8个位置。
+
+**这里我们可以看到给了一个立即数，里面很有可能有重要的信息（从后面要验证的信息可以推断里面是整数）。所以用`p *(int *) 0x6032d0`打印里面的内容查看**
+
+```shell
+(gdb) p *(int *) 0x6032d0
+$7 = 332
+(gdb) p *(int *) 0x6032e0
+$8 = 168
+(gdb) p *(int *) 0x6032f0
+$9 = 924
+(gdb) p *(int *) 0x603300
+$10 = 691
+(gdb) p *(int *) 0x603310
+$11 = 477
+(gdb) p *(int *) 0x603320
+$12 = 443
+```
+
+比较rsi是否等于0x18。
 
 不相等，继续往下，进入到参数2，参数2=2，大于1，继续往下。
 
@@ -625,7 +656,7 @@ rdx+8后打印内容为250
 
 比较eax跟参数2，不相等，回退0x401176，发生循环，否则跳转到0x401188，
 
-明显最终目的是跳出循环，故第二个参数应该等于2，继续分析0x401188位置。
+重复次数跟参数大小有关，(**也就是这里实际上是利用参数的值，将0x6032d0第x个位置的值存入栈中，x为当前循环的参数值**)
 
 ```assembly
   401188:	48 89 54 74 20       	mov    %rdx,0x20(%rsp,%rsi,2)
@@ -658,6 +689,8 @@ rsp栈存入了rdx的内容，位置从20开始
 
 ecx=eax符合条件，又回退到401188进行下一轮验证
 
+**综合上面的内容，上面的操作，就是通过参数的值，将0x6032d0这个地址，从d0开始数，向0x20(%rsp,%rsi,2) 这段距离开始，值取出并填充,而填充值通过参数从0x6032d0进行索引计算，来决定值**
+
 ```assembly
   401188:	48 89 54 74 20       	mov    %rdx,0x20(%rsp,%rsi,2)
   40118d:	48 83 c6 04          	add    $0x4,%rsi
@@ -665,7 +698,7 @@ ecx=eax符合条件，又回退到401188进行下一轮验证
   401195:	74 14                	je     4011ab <phase_6+0xb7>
 ```
 
-当6轮都检验完后，进入0x4011ab位置
+当6轮都填充完后，进入0x4011ab位置
 
 ```assembly
   4011ab:	48 8b 5c 24 20       	mov    0x20(%rsp),%rbx
@@ -681,15 +714,9 @@ ecx=eax符合条件，又回退到401188进行下一轮验证
   4011d0:	eb eb                	jmp    4011bd <phase_6+0xc9>
 ```
 
-从这段逻辑看出，突破口在于%rsi=%rax，
+这里在做的事情，**是将存在rsp栈中的内容，插回到rcx寄存器，也就是0x6032d0开始数的位置。修改寄存器的值**
 
-首先rax在0x28的位置，要到达0x50的位置，需要经过0x28的距离，每次步长为8，则需要经过5次
-
-那么在这5次循环中做了什么事情呢？
-
-rcx从0x20开始，移动到0x20+0x28=0x48的位置。
-
-这样做的目的往后分析看看
+#### <span id="head17"> 验证有序部分</span>
 
 ```assembly
   4011d2:	48 c7 42 08 00 00 00 	movq   $0x0,0x8(%rdx) #rdx+8=0
@@ -712,17 +739,50 @@ rcx从0x20开始，移动到0x20+0x28=0x48的位置。
   401203:	c3                   	retq   
 ```
 
-这里的突破口是`cmp    %eax,(%rbx)` 如果rbx <= eax 则发生爆炸。 
+rdx=0x50(%rsp)=0
+
+这里的突破口是`cmp    %eax,(%rbx)` 如果rbx <= eax 则发生爆炸。
 
 rbx是栈的首地址。
 
-rax存储的值是0xa8(168)
+rax = rbx + 0x8。也就是下个数的地址。 
 
-所以需要保证rbx>=168
+**可以推断出这里的逻辑是每轮都保证rbx>eax，即下一个数小于上一个数，即可拆解炸弹。**
 
-后续的内容就是验证6位数是否都符合条件。
+关键点在于，起始位置应该是最大值，依次存放较小值。 
 
-### <span id="head13"> 参考资料</span>
+我们回顾一下0x6032d0一开始存放的内容，如下所示。
+
+```shell
+(gdb) p *(int *) 0x6032d0
+$7 = 332
+(gdb) p *(int *) 0x6032e0
+$8 = 168
+(gdb) p *(int *) 0x6032f0
+$9 = 924
+(gdb) p *(int *) 0x603300
+$10 = 691
+(gdb) p *(int *) 0x603310
+$11 = 477
+(gdb) p *(int *) 0x603320
+$12 = 443
+```
+
+也就是要让下面的内容**按照924、691、477、433、332、168的顺序排序。即数字3、4、5、6、1、2。**
+
+由于中间发生过`7-参数`的操作，所以实际上应该输入的数字串为**4、3、2、1、6、5**。炸弹成功解除。
+
+#### <span id="head18"> 完整过程如下</span>
+
+1. 先读取前6个参数
+2. 验证每个参数的值大于0，小于等于6，并且每个参数互不相等。
+3. 进行`参数=7-参数`的操作。
+4. 将`0x6032d0`寄存器内的数值通过参数进行调换。
+5. 验证`0x6032d0`寄存器内的值是否为从大到小。
+
+> 第5关第6关花了一个下午+一个晚上终于完成了。第6关没有发现打印整数的指令，一直用x/s去查看地址的值，所以一直没看懂逻辑，中间从地址取出，存到栈，又放回寄存器的过程也读了好久才理解。但炸弹解出来后其实整个流程也挺简单，在汇编代码上却很难读懂，不过能独立做出来真的太不容易了。
+
+### <span id="head19"><span id="head13"> 参考资料</span></span>
 
 [超精讲-逐例分析 CSAPP：Lab2-Bomb!(上)](https://zhuanlan.zhihu.com/p/339461318)
 
