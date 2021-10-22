@@ -1,6 +1,17 @@
 # BombLab
 
-[toc]
+- [关卡1](#--1)
+- [关卡2](#--2)
+  * [1.phase_2](#1phase-2)
+- [2.read_six_numbers](#2read-six-numbers)
+- [关卡3](#--3)
+  * [1.phase_3](#1phase-3)
+- [关卡4](#--4)
+  * [1.phase_4](#1phase-4)
+  * [2.func4](#2func4)
+- [关卡5](#--5)
+  * [1.phase_5](#1phase-5)
+- [参考资料](#----)
 
 安装gdb：`sudo yum install gdb`
 
