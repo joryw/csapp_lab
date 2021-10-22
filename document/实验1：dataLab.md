@@ -382,3 +382,5 @@ unsigned floatPower2(int x) {
 ### 参考资料
 
 [CSAPP:Lab1 -DataLab 超详解](https://zhuanlan.zhihu.com/p/339047608)
+
+[CSAPP：位操作实现基本运算](https://www.cnblogs.com/ustca/p/11740382.html)

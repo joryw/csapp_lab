@@ -431,3 +431,4 @@ flyers：9、15、14、5、6、7
 
 [超精讲-逐例分析 CSAPP：Lab2-Bomb!(上)](https://zhuanlan.zhihu.com/p/339461318)
 
+[超精讲-逐例分析 CSAPP：Lab2-Bomb!(下)](https://zhuanlan.zhihu.com/p/339575162)
