@@ -421,9 +421,13 @@ flyers：9、15、14、5、6、7
 
 通过对照ASCII表。
 
-![image-20211021200451282](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212246.png)
+![image-20211021200451282](https://gitee.com/junchao-ustc/picture/raw/master/img/20211022125238.png)
 
 最终确定字符串yonuvw（答案并不唯一）符合条件。如图所示
 
-![image-20211021204425592](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212247.png)
+![image-20211021204425592](https://gitee.com/junchao-ustc/picture/raw/master/img/20211022125204.png)
+
+### 参考资料
+
+[超精讲-逐例分析 CSAPP：Lab2-Bomb!(上)](https://zhuanlan.zhihu.com/p/339461318)
 

@@ -379,3 +379,6 @@ unsigned floatPower2(int x) {
 }
 ```
 
+### 参考资料
+
+[CSAPP:Lab1 -DataLab 超详解](https://zhuanlan.zhihu.com/p/339047608)
