@@ -421,7 +421,7 @@ flyers：9、15、14、5、6、7
 
 通过对照ASCII表。
 
-![image-20211021200451282](https://gitee.com/junchao-ustc/picture/raw/master/img/20211022125238.png)
+![image-20211021200451282](https://gitee.com/junchao-ustc/picture/raw/master/img/20211022130044.png)
 
 最终确定字符串yonuvw（答案并不唯一）符合条件。如图所示
 
