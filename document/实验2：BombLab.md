@@ -1,17 +1,18 @@
-# BombLab
+# <span id="head1"> BombLab</span>
 
-- [关卡1](#--1)
-- [关卡2](#--2)
-  * [1.phase_2](#1phase-2)
-- [2.read_six_numbers](#2read-six-numbers)
-- [关卡3](#--3)
-  * [1.phase_3](#1phase-3)
-- [关卡4](#--4)
-  * [1.phase_4](#1phase-4)
-  * [2.func4](#2func4)
-- [关卡5](#--5)
-  * [1.phase_5](#1phase-5)
-- [参考资料](#----)
+- [ BombLab](#head1)
+	- [ 关卡1](#head2)
+	- [ 关卡2](#head3)
+		- [ 1.phase_2](#head4)
+	- [ 2.read_six_numbers](#head5)
+	- [ 关卡3](#head6)
+		- [ 1.phase_3](#head7)
+	- [ 关卡4](#head8)
+		- [ 1.phase_4](#head9)
+		- [ 2.func4](#head10)
+	- [ 关卡5](#head11)
+		- [ 1.phase_5](#head12)
+	- [ 参考资料](#head13)
 
 安装gdb：`sudo yum install gdb`
 
@@ -21,13 +22,13 @@
 
 使用`objdump -d ./bomb >> bomb.s`反编译得到汇编代码
 
-### 关卡1
+### <span id="head2"> 关卡1</span>
 
 思路，在验证字符串是否符合的位置，找到汇编代码中用到哪个寄存器里的数据进行字符串验证，打印出里面的值就行。
 
 首先前面会将输入的字符串存入到%rax中
 
-![image-20211020162409116](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212240.png)
+![image-20211020162409116](实验2：BombLab.assets/20211021212240.png)
 
 我们可以看到phase_1所在的代码如图红框所示，汇编代码含义如下
 
@@ -45,9 +46,9 @@
 0x402400:       "Border relations with Canada have never been better."
 ```
 
-### 关卡2
+### <span id="head3"> 关卡2</span>
 
-#### 1.phase_2
+#### <span id="head4"> 1.phase_2</span>
 
 ```assembly
 0000000000400efc <phase_2>:
@@ -84,7 +85,7 @@
 
 故循环6位数的结果为1 2 4 8 16 32
 
-### 2.read_six_numbers
+### <span id="head5"> 2.read_six_numbers</span>
 
 ```assembly
 000000000040145c <read_six_numbers>:
@@ -114,7 +115,7 @@
   40149d:	c3                   	retq  
 ```
 
-![image-20211020201616336](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212241.png)
+![image-20211020201616336](实验2：BombLab.assets/20211021212241.png)
 
 从 0x4025c3可以看出，需要6位数字
 
@@ -123,15 +124,15 @@
 0x4025c3:       "%d %d %d %d %d %d"
 ```
 
-### 关卡3
+### <span id="head6"> 关卡3</span>
 
-#### 1.phase_3
+#### <span id="head7"> 1.phase_3</span>
 
-![image-20211020222651772](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212242.png)
+![image-20211020222651772](实验2：BombLab.assets/20211021212242.png)
 
 sscanf(rdi,esi,rdx,rcx)
 
-![image-20211020222913317](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212243.png)
+![image-20211020222913317](实验2：BombLab.assets/20211021212243.png)
 
 - 利用`%rdx` 也就是`0x8+%rsp`和利用`%rcx` 也就是`0xc+%rsp`传递`sscanf`函数用的第三和第四个参数
 - 第二个参数为一个常数`0x4025cf`随后调用`<__isoc99_sscanf@plt>` 这里注意一下`sscanf`如果调用成功的话会返回2这里如果成功的话会跳转到`400f6a`这里读入的`rdx`和`rcx`的值就是我们输入的第一个和第二个数
@@ -211,9 +212,9 @@ sscanf(rdi,esi,rdx,rcx)
 7 327
 ```
 
-### 关卡4
+### <span id="head8"> 关卡4</span>
 
-#### 1.phase_4
+#### <span id="head9"> 1.phase_4</span>
 
 ```assembly
 000000000040100c <phase_4>:
@@ -253,7 +254,7 @@ sscanf(rdi,esi,rdx,rcx)
 
 这一段可以看出第二个参数必须为0
 
-#### 2.func4
+#### <span id="head10"> 2.func4</span>
 
 ```assembly
 0000000000400fce <func4>:
@@ -282,7 +283,6 @@ sscanf(rdi,esi,rdx,rcx)
 假设填入边界条件7，发生跳转，则进入下面逻辑
 
 ```assembly
-
   400ff2:	b8 00 00 00 00       	mov    $0x0,%eax  #eax=0
   400ff7:	39 f9                	cmp    %edi,%ecx  #edi = ecx = 7 符合跳转条件，
   400ff9:	7d 0c                	jge    401007 <func4+0x39>
@@ -341,7 +341,7 @@ void func4(int x,int y,int z)  //y的初始值为0，z的初始值为14,t->%rax,
   }
 ```
 
- 倒推，最后一直落到t=2t，只要t=0，则能得到结果。
+倒推，最后一直落到t=2t，只要t=0，则能得到结果。
 
 每次都会发生`t=(t+k)>>1`; 那么，初始化的t都会缩小，
 
@@ -349,9 +349,9 @@ void func4(int x,int y,int z)  //y的初始值为0，z的初始值为14,t->%rax,
 
 
 
-### 关卡5
+### <span id="head11"> 关卡5</span>
 
-#### 1.phase_5
+#### <span id="head12"> 1.phase_5</span>
 
 **字符串长度验证部分**
 
@@ -400,7 +400,7 @@ void func4(int x,int y,int z)  //y的初始值为0，z的初始值为14,t->%rax,
 1. 6次循环每次取出索引位置的字符，将其与0xf进行&操作，得到字符十六进制的最后一位，最后将地址0x4024b0+%edx（前面&操作计算的数值），根据`0x10(%rsp,%rax,1)`将结果递增存储到栈位置，最后进行字符串比较
 2. 我们可以打印出0x4024b0位置的内容，每次取出对应的是哪些值
 
-![image-20211021203806616](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212244.png)
+![image-20211021203806616](实验2：BombLab.assets/20211021212244.png)
 
 3. 从上图可以看出，0x4024b0起始的字符串索引1-15对应的值为maduiersnfotvbyl。
 
@@ -420,7 +420,7 @@ void func4(int x,int y,int z)  //y的初始值为0，z的初始值为14,t->%rax,
 
 看到直接数  `0x40245e`  打印看看内容
 
-![image-20211021192625268](https://gitee.com/junchao-ustc/picture/raw/master/img/20211021212245.png)
+![image-20211021192625268](实验2：BombLab.assets/20211021212245.png)
 
 得到字符串"flyers"
 
@@ -438,7 +438,7 @@ flyers：9、15、14、5、6、7
 
 ![image-20211021204425592](实验2：BombLab.assets/image-20211021204425592.png)
 
-### 参考资料
+### <span id="head13"> 参考资料</span>
 
 [超精讲-逐例分析 CSAPP：Lab2-Bomb!(上)](https://zhuanlan.zhihu.com/p/339461318)
 
