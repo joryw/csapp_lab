@@ -1,6 +1,6 @@
 # gdb常用指令
 
-`gdb -rui bomb`：进入可视化界面
+`gdb -tui bomb`：进入可视化界面
 
 `layout split`：可以看源码和汇编代码
 
