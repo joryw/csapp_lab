@@ -17,7 +17,9 @@
 
 [实验1：dataLab](https://github.com/junchao-ustc/csapp/blob/main/document/%E5%AE%9E%E9%AA%8C1%EF%BC%9AdataLab.md) 
 
-[实验2：BombLab](https://github.com/junchao-ustc/csapp/blob/main/document/%E5%AE%9E%E9%AA%8C2%EF%BC%9ABombLab.md)
+[实验2：BombLab（上）](https://github.com/junchao-ustc/csapp/blob/main/document/%E5%AE%9E%E9%AA%8C2%EF%BC%9ABombLab%EF%BC%88%E4%B8%8A%EF%BC%89.md)
+
+[实验2：BombLab（下）](https://github.com/junchao-ustc/csapp/blob/main/document/%E5%AE%9E%E9%AA%8C2%EF%BC%9ABombLab%EF%BC%88%E4%B8%8B%EF%BC%89.md)
 
 ---
 
