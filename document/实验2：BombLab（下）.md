@@ -604,7 +604,7 @@ $5 = 107
 
 返回的eax=0，发生爆炸。
 
-### <span id="head12">破解eax = 2</span>
+#### <span id="head12">破解eax = 2</span>
 
 根据上面的尝试可以进行推理。
 
@@ -620,7 +620,7 @@ $5 = 107
 2. eax = 0、调用fun7、eax = eax + 1 返回
 3. 返回
 
-#### <span id="head13"> 步骤1</span>
+##### <span id="head13"> 步骤1</span>
 
 ```assembly
   40120d:	8b 17                	mov    (%rdi),%edx #edx=(rdi)=36
@@ -634,7 +634,7 @@ $5 = 107
 
 要触发`add    %eax,%eax`，参数值需要小于36。又一次调用`func7`
 
-#### <span id="head14"> 步骤2</span>
+##### <span id="head14"> 步骤2</span>
 
 ```assembly
   40120d:	8b 17                	mov    (%rdi),%edx #edx=(rdi)=36
@@ -653,7 +653,7 @@ $5 = 107
 
 此时edx = 8，eax初始化为0，才能进入`lea    0x1(%rax,%rax,1),%eax`，参数需要大于8并且不能等于8，使eax = eax +1。在这之前又调用了`fun7`
 
-#### <span id="head15"> 步骤3</span>
+##### <span id="head15"> 步骤3</span>
 
 ```assembly
   401204:	48 83 ec 08          	sub    $0x8,%rsp
