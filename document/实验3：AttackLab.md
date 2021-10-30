@@ -11,8 +11,8 @@
       - [touch3函数](#touch3%E5%87%BD%E6%95%B0)
   * [Part II: Return-Oriented Programming](#part-ii-return-oriented-programming)
     + [lever 2](#lever-2)
-      - [**方案1：**直接弹给rdi](#%E6%96%B9%E6%A1%881%E7%9B%B4%E6%8E%A5%E5%BC%B9%E7%BB%99rdi)
-      - [**方案2：**找一个寄存器暂存，然后存入rdi](#%E6%96%B9%E6%A1%882%E6%89%BE%E4%B8%80%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E6%9A%82%E5%AD%98%E7%84%B6%E5%90%8E%E5%AD%98%E5%85%A5rdi)
+      - [方案1：直接弹给rdi](#%E6%96%B9%E6%A1%881%E7%9B%B4%E6%8E%A5%E5%BC%B9%E7%BB%99rdi)
+      - [方案2：找一个寄存器暂存，然后存入rdi](#%E6%96%B9%E6%A1%882%E6%89%BE%E4%B8%80%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E6%9A%82%E5%AD%98%E7%84%B6%E5%90%8E%E5%AD%98%E5%85%A5rdi)
     + [lever 3](#lever-3-1)
     + [参考材料](#%E5%8F%82%E8%80%83%E6%9D%90%E6%96%99)
 
@@ -470,7 +470,7 @@ ret
 
 **整个流程是遇到ret，进行弹栈，找到pop位置，将地址存入rdi寄存器，执行c3弹栈，跳转到下一个地址操作。然后用mov将寄存器内容存入rdi，执行c3弹栈跳转到touch2起始位置。**
 
-#### **方案1：**直接弹给rdi
+#### 方案1：直接弹给rdi
 
 ```assembly
 pop rdi
@@ -509,7 +509,7 @@ ec 17 40 00 00 00 00 00
 
 > 注：实际上这个方案并不在建议给的条件内，即用两个gadgets，在start_farm和end_fram范围内。
 
-#### **方案2：**找一个寄存器暂存，然后存入rdi
+#### 方案2：找一个寄存器暂存，然后存入rdi
 
 通过查找可行的字节码，遍历查找红框下所有可能数据
 
