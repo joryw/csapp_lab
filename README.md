@@ -21,6 +21,8 @@
 
 [实验2：BombLab（下）](https://github.com/junchao-ustc/csapp/blob/main/document/%E5%AE%9E%E9%AA%8C2%EF%BC%9ABombLab%EF%BC%88%E4%B8%8B%EF%BC%89.md)
 
+[实验3：AttackLab](https://github.com/junchao-ustc/csapp/blob/main/document/%E5%AE%9E%E9%AA%8C3%EF%BC%9AAttackLab.md)
+
 ---
 
 ### <span id="head2"> 其他知识汇总</span>
